@@ -4,7 +4,7 @@ import { useState } from 'react';
 function App() {
   const [title, setTitle] = useState('Invoice');
   const [items, setItems] = useState([]);
-  const [payMethod, setPayMethod] = useState('UPI');
+  const [payMethod, setPayMethod] = useState('Cash');
   const [note, setNote] = useState('---');
   const [date, setDate] = useState(
     new Date().toLocaleString('en-in', {
@@ -13,6 +13,8 @@ function App() {
     })
   );
   const [total, setTotal] = useState('0');
+  const [logo, setLogo] = useState('');
+
   function generatePdf() {
     const element = document.getElementById('invoice');
     const excludeElement = document.getElementById('excludeElement');
@@ -40,28 +42,96 @@ function App() {
     setItems([...items, ['Item', 0, 0.0, 0]]);
   }
 
+  function uploadLogo(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader(file);
+      reader.onload = () => {
+        setLogo(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   return (
     <div
       style={{
         display: 'flex',
         alignItems: 'center',
-        flexDirection: 'column',
-        gap: '1rem',
+        flexDirection: 'row-reverse',
+        height: 'auto',
+        fontFamily: 'Arial, roboto, sans-serif',
       }}
     >
-      <button onClick={generatePdf}>Download PDF</button>
-      <div className='invoice-container' style={{ width: '80%' }}>
+      <div
+        className='buttons'
+        style={{
+          width: '20%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          padding: '1.5rem',
+        }}
+      >
+        <button
+          onClick={generatePdf}
+          style={{
+            border: '1px solid #000',
+            borderRadius: '5px',
+            padding: '0.5rem',
+            backgroundColor: '#d4d4d4',
+            cursor: 'pointer',
+          }}
+        >
+          Download PDF
+        </button>
+        <label
+          htmlFor='logo-upload'
+          style={{
+            border: '1px solid #000',
+            borderRadius: '5px',
+            padding: '0.5rem',
+            cursor: 'pointer',
+            fontSize: '0.9rem',
+            backgroundColor: '#d4d4d4',
+          }}
+        >
+          Upload Logo
+        </label>
+        <input
+          type='file'
+          name='logo-upload'
+          id='logo-upload'
+          accept='image/*'
+          onChange={uploadLogo}
+          style={{ visibility: 'hidden' }}
+        />
+      </div>
+      <div
+        className='invoice-container'
+        style={{ width: '80%', padding: '1.5rem' }}
+      >
         <div
           id='invoice'
           style={{
             backgroundColor: '#fff',
-            padding: '20px',
             border: '1px solid #000',
             position: 'relative',
             width: '100%',
             fontFamily: 'Arial, roboto, sans-serif',
           }}
         >
+          <div className='logo'>
+            {logo && (
+              <img
+                src={logo}
+                alt='logo'
+                style={{ width: '6rem', height: '6rem', padding: '1.5rem' }}
+              />
+            )}
+          </div>
           <div
             contentEditable='true'
             suppressContentEditableWarning='true'
